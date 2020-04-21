@@ -17,6 +17,7 @@ def image_to_2d_array(im):
 def k_means_clustering_on_img(k, im, num_attempts):
     clustering_attempts = []
     while len(clustering_attempts) < num_attempts:
+        # print("Trying: " + str(len(clustering_attempts)))
         # Randomly selecting starting clusters
         centers = []
         while len(centers) < k:
@@ -93,3 +94,17 @@ def variance(lst):
 
 def get_distance_vector(center, cluster):
     return [euclidean_distance(center, x) for x in cluster]
+
+def get_closest(centers, current):
+    min_dist = float('inf')
+    closest = []
+    for i in centers:
+        dist = euclidean_distance(i, current)
+
+        if dist < min_dist:
+            min_dist = dist
+            closest = [i]
+        elif dist == min_dist:
+            closest.append(i)
+
+    return random.choice(closest)
