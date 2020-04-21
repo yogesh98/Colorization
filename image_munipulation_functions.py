@@ -11,6 +11,9 @@ def image_to_2d_array(im):
     return [arr[i:i + w] for i in range(0, len(arr), w)]
 
 # takes 2d list of RGB tuples and performs a k means clustering on them
+# Returns the k colors that it found in the clustering
+# k is the number of clusters, im is the image as a 2d list of rgb tuples
+# and num attempts is how many attempts it should make to find the best clusters
 def k_means_clustering_on_img(k, im, num_attempts):
     clustering_attempts = []
     while len(clustering_attempts) <= num_attempts:
