@@ -5,8 +5,6 @@ from PIL import Image
 
 
 if __name__ == "__main__":
-    im = Image.open("Pictures/black.jpg")
+    im = Image.open("Pictures/Beach1_original_500x333.jpeg")
     im_as_array = image_to_2d_array(im)
-
-    for row in im_as_array:
-        print(row)
+    print(k_means_clustering_on_img(4, im_as_array, 1))

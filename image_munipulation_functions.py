@@ -16,10 +16,10 @@ def image_to_2d_array(im):
 # and num attempts is how many attempts it should make to find the best clusters
 def k_means_clustering_on_img(k, im, num_attempts):
     clustering_attempts = []
-    while len(clustering_attempts) <= num_attempts:
+    while len(clustering_attempts) < num_attempts:
         # Randomly selecting starting clusters
         centers = []
-        while len(centers) <= 5:
+        while len(centers) < k:
             choice = random.choice(random.choice(im))
             if choice not in centers:
                 centers.append(choice)
@@ -29,7 +29,9 @@ def k_means_clustering_on_img(k, im, num_attempts):
         # keep doing this until mean values do not change
         # also keep track of distances in another list so its easier to calculate variation later
         centroid_changed = True
-        clusters = []; for i in centers: clusters.append([])
+        clusters = []
+        for i in centers:
+            clusters.append([])
         while centroid_changed:
             centroid_changed = False
             for row in im:
@@ -40,8 +42,10 @@ def k_means_clustering_on_img(k, im, num_attempts):
                         centroid = centers[i]
                         distance = euclidean_distance(current, centroid)
 
-                        if distance <= smallest_distance:
+                        if distance < smallest_distance:
                             smallest_distance = distance
+                            closest_centroid_indices = [i]
+                        elif distance == smallest_distance:
                             closest_centroid_indices.append(i)
 
                     center_index = random.choice(closest_centroid_indices)
@@ -58,7 +62,8 @@ def k_means_clustering_on_img(k, im, num_attempts):
         for i in range(len(centers)):
             center = centers[i]
             cluster = clusters[i]
-            variances.append(variance(cluster))
+            distance_vector = get_distance_vector(center, cluster)
+            variances.append(variance(distance_vector))
         clustering_attempts.append((centers, sum(variances)))
 
     min_variance = float('inf')
@@ -83,5 +88,8 @@ def mean_point(lst):
 
 def variance(lst):
     mean = sum(lst)/len(lst)
-
     return sum((i - mean) ** 2 for i in lst) / len(lst)
+
+
+def get_distance_vector(center, cluster):
+    return [euclidean_distance(center, x) for x in cluster]
