@@ -79,20 +79,17 @@ def k_means_clustering_on_img(k, im, num_attempts):
     return random.choice(min_clusters)
 
 def image_first_transform(colors, im, im_as_array):
+    imGray = im.convert("L")
+    im_as_arrayNew = image_to_2d_array(imGray)
     for y in range(len(im_as_array) - 1):
         row = im_as_array[y]
         for x in range((len(row) - 1)):
             if( x >= (len(row) - 1)/2):
                 current = row[x]
                 ncolor = get_closest(colors, current)
-                im_as_array[y][x] = ncolor
-                im.putpixel((x, y), ncolor)
-            else:
-                #### go pixel by pixel and covert first half to grey.
-
-
-
-
+                im_as_arrayNew[y][x] = ncolor
+                imGray.putpixel((x, y), ncolor)
+    return imGray
 def euclidean_distance(start, end):
     return math.sqrt(sum([(a - b) ** 2 for a, b in zip(start, end)]))
 
