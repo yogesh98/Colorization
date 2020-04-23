@@ -1,6 +1,7 @@
 from PIL import Image, ImageOps
 import random
 import math
+import operator
 from PIL import Image
 # Takes Image object and returns a 2d list of RGB values as tuples in the lists
 def image_to_2d_array(im):
@@ -121,3 +122,38 @@ def get_closest(centers, current):
             closest.append(i)
 
     return random.choice(closest)
+
+def six_similar(im,x_coord,y_coord):
+    #convert whole image to greyscale
+    imGray = im.convert("LA")
+    im_as_array = image_to_2d_array(imGray)
+    top_six = []
+    nine_pix = []
+
+    #put the 9 pixels in the 3x3 square into
+    for y_get in range(y_coord-1,y_coord+2):
+        for x_get in range(x_coord-1,x_coord+2):
+            nine_pix.append(im_as_array[y_get][x_get])
+
+    for y in range(1,len(im_as_array)-1):
+        row = im_as_array[y]
+        for x in range(1, int(round((len(row))/2))-2):
+            difference_count = 0
+            count = 0
+            for y2 in range(y-1,y+2):
+                for x2 in range(x-1,x+2):
+                    #gray_nine= 0.21*(nine_pix[count][0])+0.72*(nine_pix[count][1])+0.07**(nine_pix[count][2])
+                    #gray_array= 0.21*(im_as_array[y2][x2][0])+0.72*(im_as_array[y2][x2][1])+0.07**(im_as_array[y2][x2][2])
+                    difference_count =difference_count+abs(nine_pix[count][0]-im_as_array[y2][x2][0])
+                    count += 1
+            if(len(top_six)<6):
+                top_six.append((difference_count,(x,y)))
+            else:
+                for element in top_six:
+                    if(element[0]>difference_count):
+                        top_six.append((difference_count,(x,y)))
+                        top_six.sort(key=operator.itemgetter(0))
+
+                        break
+    top_six.sort(key=operator.itemgetter(0))
+    return top_six
