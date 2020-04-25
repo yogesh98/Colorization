@@ -3,6 +3,8 @@ import random
 import math
 import operator
 from PIL import Image
+
+
 # Takes Image object and returns a 2d list of RGB values as tuples in the lists
 def image_to_2d_array(im):
     w = im.size[0]
@@ -12,8 +14,9 @@ def image_to_2d_array(im):
 
     return [arr[i:i + w] for i in range(0, len(arr), w)]
 
+
 # takes 2d list of RGB tuples and performs a k means clustering on them
-# Returns the k colors that it found in the clustering
+# Returns the k clustered_colors that it found in the clustering
 # k is the number of clusters, im is the image as a 2d list of rgb tuples
 # and num attempts is how many attempts it should make to find the best clusters
 def k_means_clustering_on_img(k, im, num_attempts):
@@ -79,7 +82,8 @@ def k_means_clustering_on_img(k, im, num_attempts):
 
     return random.choice(min_clusters)
 
-def image_first_transform(colors, im, im_as_array):
+
+def left_gray_right_colored(colors, im, im_as_array):
     imGray = im.convert("L")
     imGray = imGray.convert("RGB")
     im_as_arrayNew = image_to_2d_array(imGray)
@@ -91,6 +95,8 @@ def image_first_transform(colors, im, im_as_array):
             im_as_arrayNew[y][x] = ncolor
             imGray.putpixel((x, y), ncolor)
     return imGray
+
+
 def euclidean_distance(start, end):
     return math.sqrt(sum([(a - b) ** 2 for a, b in zip(start, end)]))
 
@@ -109,6 +115,7 @@ def variance(lst):
 def get_distance_vector(center, cluster):
     return [euclidean_distance(center, x) for x in cluster]
 
+
 def get_closest(centers, current):
     min_dist = float('inf')
     closest = []
@@ -123,35 +130,37 @@ def get_closest(centers, current):
 
     return random.choice(closest)
 
-def six_similar(im,x_coord,y_coord):
-    #convert whole image to greyscale
-    imGray = im.convert("LA")
-    im_as_array = image_to_2d_array(imGray)
+
+#Changed to be given already grayscale image to it runs quicker
+def six_similar_on_right_half(imGray_as_array, x_coord, y_coord):
     top_six = []
     nine_pix = []
 
     #put the 9 pixels in the 3x3 square into
     for y_get in range(y_coord-1,y_coord+2):
         for x_get in range(x_coord-1,x_coord+2):
-            nine_pix.append(im_as_array[y_get][x_get])
+            nine_pix.append(imGray_as_array[y_get][x_get])
 
-    for y in range(1,len(im_as_array)-1):
-        row = im_as_array[y]
-        for x in range(1, int(round((len(row))/2))-2):
+    for y in range(1, len(imGray_as_array) - 1):
+        row = imGray_as_array[y]
+        for x in range(int(round((len(row))/2)), len(row) - 1):
             difference_count = 0
             count = 0
             for y2 in range(y-1,y+2):
                 for x2 in range(x-1,x+2):
                     #gray_nine= 0.21*(nine_pix[count][0])+0.72*(nine_pix[count][1])+0.07**(nine_pix[count][2])
-                    #gray_array= 0.21*(im_as_array[y2][x2][0])+0.72*(im_as_array[y2][x2][1])+0.07**(im_as_array[y2][x2][2])
-                    difference_count =difference_count+abs(nine_pix[count][0]-im_as_array[y2][x2][0])
+                    #gray_array= 0.21*(imGray_as_array[y2][x2][0])+0.72*(imGray_as_array[y2][x2][1])+0.07**(imGray_as_array[y2][x2][2])
+                    difference_count =difference_count+abs(nine_pix[count] - imGray_as_array[y2][x2])
                     count += 1
+
+
             if(len(top_six)<6):
                 top_six.append((difference_count,(x,y)))
             else:
                 for element in top_six:
                     if(element[0]>difference_count):
-                        top_six.append((difference_count,(x,y)))
+                        top_six.remove(element)
+                        top_six.append((difference_count, (x, y)))
                         top_six.sort(key=operator.itemgetter(0))
 
                         break
