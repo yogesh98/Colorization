@@ -15,13 +15,26 @@ if __name__ == "__main__":
 
     print("Clustering Colors...", end='')
     im_as_array = image_to_2d_array(im)
-    clustered_colors = k_means_clustering_on_img(5, im_as_array, 5)
+    clustered_colors = k_means_clustering_on_img(10, im_as_array, 5)
+
+    # imcopy = Image.open(path)
+    # for y in range(len(im_as_array)):
+    #     row = im_as_array[y]
+    #     for x in range(len(row)):
+    #         current = row[x]
+    #         ncolor = get_closest(clustered_colors, current)
+    #         imcopy.putpixel((x, y), ncolor)
+    #
+    # imcopy.show()
 
     im_final = left_gray_right_colored(clustered_colors, im, im_as_array)
     im_final_as_array = image_to_2d_array(im_final)
 
     im_gray = im.convert("L")
     im_gray_as_array = image_to_2d_array(im_gray)
+
+    print("\rInitializing Training Data\n", end='')
+    initialize_training_data(im_gray_as_array)
 
     print("\rthis picture is " + str(len(im_final_as_array[0])) + " x " + str(len(im_final_as_array)))
 

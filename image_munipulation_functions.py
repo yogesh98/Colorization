@@ -4,7 +4,7 @@ import math
 import operator
 from PIL import Image
 
-
+training_data = []
 # Takes Image object and returns a 2d list of RGB values as tuples in the lists
 def image_to_2d_array(im):
     w = im.size[0]
@@ -130,29 +130,52 @@ def get_closest(centers, current):
 
     return random.choice(closest)
 
+def initialize_training_data(imGray_as_array):
+    num_rows = len(imGray_as_array)
+    num_cols = len(imGray_as_array[0])
+
+    for y in range(num_rows):
+        training_data.append([])
+        for x in range(num_cols):
+            value = []
+            if x == 0 or x == num_cols - 1 or y == 0 or y == num_rows - 1:
+                training_data[y].append(None)
+            else:
+                for y2 in range(y - 1, y + 2):
+                    for x2 in range(x - 1, x + 2):
+                        value.append(imGray_as_array[y2][x2])
+                training_data[y].append(value)
+
+    # for row in training_data:
+    #     print(row)
 
 #Changed to be given already grayscale image to it runs quicker
 def six_similar_on_right_half(imGray_as_array, x_coord, y_coord):
     top_six = []
     nine_pix = []
+    value = 0
 
     #put the 9 pixels in the 3x3 square into
     for y_get in range(y_coord-1,y_coord+2):
         for x_get in range(x_coord-1,x_coord+2):
             nine_pix.append(imGray_as_array[y_get][x_get])
+            value += imGray_as_array[y_get][x_get]
 
     for y in range(1, len(imGray_as_array) - 1):
         row = imGray_as_array[y]
         for x in range(int(round((len(row))/2)), len(row) - 1):
             difference_count = 0
-            count = 0
-            for y2 in range(y-1,y+2):
-                for x2 in range(x-1,x+2):
-                    #gray_nine= 0.21*(nine_pix[count][0])+0.72*(nine_pix[count][1])+0.07**(nine_pix[count][2])
-                    #gray_array= 0.21*(imGray_as_array[y2][x2][0])+0.72*(imGray_as_array[y2][x2][1])+0.07**(imGray_as_array[y2][x2][2])
-                    difference_count =difference_count+abs(nine_pix[count] - imGray_as_array[y2][x2])
-                    count += 1
+            # count = 0
+            # for y2 in range(y-1,y+2):
+            #     for x2 in range(x-1,x+2):
+            #         #gray_nine= 0.21*(nine_pix[count][0])+0.72*(nine_pix[count][1])+0.07**(nine_pix[count][2])
+            #         #gray_array= 0.21*(imGray_as_array[y2][x2][0])+0.72*(imGray_as_array[y2][x2][1])+0.07**(imGray_as_array[y2][x2][2])
+            #         difference_count =difference_count+abs(nine_pix[count] - imGray_as_array[y2][x2])
+            #         count += 1
 
+            current_patch = training_data[y][x]
+            for i in range(9):
+                difference_count += abs(nine_pix[i] - current_patch[i])
 
             if(len(top_six)<6):
                 top_six.append((difference_count,(x,y)))
@@ -162,7 +185,6 @@ def six_similar_on_right_half(imGray_as_array, x_coord, y_coord):
                         top_six.remove(element)
                         top_six.append((difference_count, (x, y)))
                         top_six.sort(key=operator.itemgetter(0))
-
                         break
     top_six.sort(key=operator.itemgetter(0))
     return top_six
