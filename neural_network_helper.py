@@ -54,3 +54,10 @@ def create_training_data(im):
 
     return im, training_data_nn
 
+def activation_function(output):
+    for i in range(3):
+        if output[i] < 0:
+            output[i] = 0
+        elif output[i] > 255:
+            output[i] = 255
+    return output

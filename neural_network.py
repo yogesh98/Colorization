@@ -81,13 +81,8 @@ if __name__ == "__main__":
             print("\n\n\n\n\n\n")
             inputs = input_new
 
-        output = inputs
 
-        for i in range(3):
-            if output[i] < 0:
-                output[i] = 0
-            elif output[i] > 255:
-                output[i] = 255
+        output = activation_function(inputs)
 
 
         error = euclidean_distance(answer, output)
