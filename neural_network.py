@@ -81,5 +81,16 @@ if __name__ == "__main__":
             print("\n\n\n\n\n\n")
             inputs = input_new
 
-            #todo: Add activation function
+        output = inputs
+
+        for i in range(3):
+            if output[i] < 0:
+                output[i] = 0
+            elif output[i] > 255:
+                output[i] = 255
+
+
+        error = euclidean_distance(answer, output)
+
+        #TODO back propagation
 
