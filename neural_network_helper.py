@@ -15,9 +15,27 @@ def get_html_5_colors():
             temp = []
     return colors
 
+# def error(x, y):
+#     e = 0
+#     for xvalue, yvalue in zip(x, y):
+#         e += (xvalue - yvalue) ** 2
+#     return e
 
-def sigmoid(x):
+def error(x, y):
+    return [x - y for x,y in zip(x, y)]
+
+def sigmoid(x, derivative=False):
+    if derivative:
+        return sigmoid(x) * (1 - sigmoid(x))
     return 1 / (1 + math.exp(-x))
+
+
+def relu(x, derivative=False):
+    if derivative:
+        if x > 0:
+            return 1
+        return 0
+    return max([0, x])
 
 
 def create_training_data(im):
@@ -54,10 +72,14 @@ def create_training_data(im):
 
     return im, training_data_nn
 
-def activation_function(output):
+
+def cap_output(output):
     for i in range(3):
         if output[i] < 0:
             output[i] = 0
         elif output[i] > 255:
             output[i] = 255
     return output
+
+
+# print(error([1, 2, 3], [1, 45, 3]))

@@ -5,8 +5,8 @@ from neural_network import neural_network
 
 if __name__ == '__main__':
 
-    # path = input("Enter Path for the Picture\n")
-    path = "Pictures/red.jpg"
+    path = input("Enter Path for the Picture\n")
+    # path = "Pictures/red.jpg"
     try:
         im = Image.open(path)
     except:
@@ -24,6 +24,6 @@ if __name__ == '__main__':
     # B = RGB[2]
     b_w = training_data[1]
 
-    nn = neural_network(9, 5, [9, 10, 9, 137, 1], 3, [None])
-    pass
+    nn = neural_network(2,1,[2],2,[None],1,1,1)
+    im.show()
 

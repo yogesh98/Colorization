@@ -14,12 +14,14 @@ class neural_network:
     # activation_function_by_layer is a list of activation functions by layer, each index corresponds to a layer
     # and epoch is epoch lol
 
-    def __init__(self, num_inputs, num_layers, nodes_in_layers, nodes_in_output, activation_function_by_layer, epoch):
+    def __init__(self, num_inputs, num_layers, nodes_in_layers, nodes_in_output, activation_function_by_layer, epoch, learning_rate, momentum):
         self.num_inputs = num_inputs
         self.num_layers = num_layers
         self.nodes_in_layers = nodes_in_layers
         self.activation_function = activation_function_by_layer
         self.epoch = epoch
+        self.learning_rate = learning_rate
+        self.momentum = momentum
         self.weight_matrix = []
         self.biases_matrix = []
         num_inputs = self.num_inputs
@@ -45,21 +47,22 @@ class neural_network:
 
     #X_train is a list of training data. The elements of x_train should be lists. Each list contains the inputs specified for the neural network
     #Y_train is the list of actual answers. Each index in y_train corresponds to that same index in X_train
-    def train(self,x_train, y_train):
+    def train(self, x_train, y_train):
         if self.num_input != len(x_train[0]):
             print("Input doesnt match network input")
             exit()
 
         for epoch in range(self.epoch):
+            cost = 0
             for i in range(len(x_train)):
                 x = x_train[i]
                 answer = y_train[i]
 
                 #Forward Propagation
                 out = self.forward_propagation(x)
-
-                #Backward Propagation
-
+                cost += error(x, answer)
+            avgcost = cost /len(x_train)
+            #Backward Propagation
 
     # Given a list of inputs x, this function will return the answer of the neural network
     def forward_propagation(self, x):
@@ -68,19 +71,21 @@ class neural_network:
                 weights = self.weight_matrix[layer_num]
                 input_new = []
                 for weight, bias in zip(weights, layer):
-                    dp = np.dot(inputs, weight)
+                    dp = np.dot(inputs, weight) + bias
                     input_new.append(dp)
                     print(dp)
 
-                inputs = input_new
+                inputs = self.activation_function[layer_num](input_new)
 
-        output = activation_function(inputs)
+        output = inputs
         return output
 
     # this function is to tune the weights and biases of the neural network
-    def backward_probagation:
-        #Have to use gradient descent
+    def backward_probagation(self, x, y, out):
+        # Have to use gradient descent
         pass
+
+
 
 
 # if __name__ == "__main__":
