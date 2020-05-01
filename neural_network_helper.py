@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from basic_agent_helper_functions import *
 
 
@@ -21,20 +22,32 @@ def get_html_5_colors():
 #         e += (xvalue - yvalue) ** 2
 #     return e
 
-def error(x, y):
-    return [x - y for x,y in zip(x, y)]
+def error(output, answer):
+    return [abs(x - y) for x,y in zip(output, answer)]
 
-def sigmoid(x, derivative=False):
-    if derivative:
-        return sigmoid(x) * (1 - sigmoid(x))
-    return 1 / (1 + math.exp(-x))
-
-
-def relu(x, derivative=False):
-    if derivative:
-        if x > 0:
-            return 1
+def sigmoid(x):
+    sig = 1 / (1 + np.exp(-x))
+    if np.isnan(sig):
         return 0
+    return sig
+
+
+#assuming x is already been through the sigmoid function
+def dsigmoid(x):
+    return x * (1 - x)
+
+def na(x):
+    if x > 0:
+        return 1
+    return 0
+    return x
+
+def drelu(x):
+    if x > 0:
+        return 1
+    return 0
+
+def relu(x):
     return max([0, x])
 
 
@@ -81,5 +94,19 @@ def cap_output(output):
             output[i] = 255
     return output
 
-
+def create_df_list(af_list):
+    df_list = []
+    for f in af_list:
+        if f == sigmoid:
+            df_list.append(np.vectorize(dsigmoid))
+        elif f == relu:
+            df_list.append(np.vectorize(drelu))
+        else:
+            df_list.append(np.vectorize(drelu))
+    return df_list
 # print(error([1, 2, 3], [1, 45, 3]))
+
+# for i in np.linspace(0,20000,200000):
+#     i = -1 * round(i,7)
+#     # sigmoid(i)
+#     print(str(i) + ": " + str(sigmoid(i)))
