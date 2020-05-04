@@ -32,32 +32,40 @@ class neural_network:
             self.weight_matrices.append([])
             nodes_in_this_layer = nodes_in_layers[k]
             for i in range(nodes_in_this_layer):
-                self.biases_matrices[k].append(-1)
+                # self.biases_matrices[k].append(-1.0)
                 # self.biases_matrices[k].append(random.uniform(0, 256))
+                self.biases_matrices[k].append(random.random())
                 self.weight_matrices[k].append([])
                 for j in range(num_inputs):
                     # self.weight_matrices[k][i].append((k + 1) * (i + 1))
-                    self.weight_matrices[k][i].append(random.randint(1,10))
-                    # self.weight_matrices[k][i].append(random.random())
+                    # self.weight_matrices[k][i].append(random.randint(1,10) * 1.0)
+                    self.weight_matrices[k][i].append(random.random())
             num_inputs = nodes_in_this_layer
 
         self.biases_matrices.append([])
         self.weight_matrices.append([])
         for i in range(nodes_in_output):
-            self.biases_matrices[-1].append(0)
+            # self.biases_matrices[-1].append(0.0)
             # self.biases_matrices[-1].append(random.uniform(0, 256))
+            self.biases_matrices[-1].append(random.random())
             self.weight_matrices[-1].append([])
             nodes_in_last = nodes_in_layers[-1]
             for j in range(nodes_in_last):
                 # choose = int(input("Choose for output layer"))
                 # self.weight_matrices[-1][-1].append(choose)
-                self.weight_matrices[-1][-1].append(random.randint(1,10))
-                # self.weight_matrices[-1][-1].append(random.random())
+                # self.weight_matrices[-1][-1].append(random.randint(1,10) * 1.0)
+                self.weight_matrices[-1][-1].append(random.random())
 
-        self.weight_matrices = [[[-1, -1, 0, 0], [1, 1, 0, 0], [0, 0, -1, -1], [0, 0, 1, 1]],
-                                [[0, 1, 1, 0], [1, 0, 0, 1]],
-                                [[1, 1]]]
+        # self.weight_matrices = [[[-1, -1, 0, 0], [1, 1, 0, 0], [0, 0, -1, -1], [0, 0, 1, 1]],
+        #                         [[0, 1, 1, 0], [1, 0, 0, 1]],
+        #                         [[1, 1]]]
         # print(self.weight_matrices)
+
+        # self.weight_matrices = [[[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+        #                         [[1, 1, 1, 1], [1, 1, 1, 1]],
+        #                         [[1, 1]]]
+
+
         for i in range(len(self.biases_matrices)):
             self.biases_matrices[i] = np.array(self.biases_matrices[i])
             self.weight_matrices[i] = np.array(self.weight_matrices[i])
@@ -72,10 +80,7 @@ class neural_network:
             exit()
 
         for epoch in range(self.epoch):
-            cost = []
-            for i in range(self.nodes_in_output):
-                cost.append(0)
-            cost = np.array(cost)
+            cost = 0
             for i in range(len(x_train)):
                 x = x_train[i]
                 answer = y_train[i]
@@ -83,14 +88,14 @@ class neural_network:
                 #Forward Propagation
                 out, output_by_layer = self.forward_propagation(x)
                 e = error(out, answer)
-                cost = np.add(cost, e)
+                for val in e:
+                    cost += val
                 #Backward Propagation
                 self.backward_propagation(output_by_layer, e)
-            for i in range(self.nodes_in_output):
-                temp = len(x_train)
-                cost[i] = cost[i] / temp
-            print("epoch: %d\tTotalCost: %d" % (epoch, cost))
-            print("\tWeights: " + str(self.weight_matrices))
+            cost = cost ** 2
+            print("epoch: %d\tTotalCost: %f" % (epoch, cost))
+            # print("\tWeights: " + str(self.weight_matrices))
+
 
 
     # Given a list of inputs x, this function will return the answer of the neural network
@@ -108,6 +113,9 @@ class neural_network:
                 inputs = list(map(self.activation_function[layer_num], input_new))
                 output_by_layer.append(inputs)
         output = inputs
+        for i in range(len(output_by_layer)):
+            output_by_layer[i] = np.array(output_by_layer[i])
+        output_by_layer = np.array(output_by_layer)
         return output, output_by_layer
 
     # this function is to tune the weights and biases of the neural network
@@ -121,8 +129,35 @@ class neural_network:
             err = transposed_weights @ err
             err_matrix.insert(0, err)
 
+        D = deepcopy(output_by_layer)
+        for i in range(1, len(output_by_layer)):
+            D[i] = derivative_list[i-1](output_by_layer[i])
+
+
+        # for i in range(len(self.weight_matrices)):
+        #     temp = err_matrix[i]
+        #     temp = temp * np.transpose(D[i])
+        #     trans = np.transpose(output_by_layer[i])
+        #     # print(type(temp))
+        #     temp = temp @ trans
+        #
+        #     gradient = temp
+        #
+        #     delta_weights = self.weight_matrices[]
+
+        for layer_num in range(len(self.weight_matrices)-1, -1, -1):
+            matrix = self.weight_matrices[layer_num]
+            d_matrix = D[layer_num + 1]
+            for entry in range(len(matrix)):
+                matrix[entry] = matrix[entry] - (d_matrix[entry] * self.learning_rate)
+            self.weight_matrices[layer_num] = matrix
+            biases = self.biases_matrices[layer_num]
+            for entry in range(len(biases)):
+                biases[entry] -= d_matrix[entry]
+            self.biases_matrices[layer_num] = biases
     def run(self, input):
         return(self.forward_propagation(input)[0])
+
 
 # if __name__ == "__main__":
 #     # path = input("Enter Path for the Picture\n")

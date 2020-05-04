@@ -23,7 +23,7 @@ def get_html_5_colors():
 #     return e
 
 def error(output, answer):
-    return [abs(x - y) for x,y in zip(output, answer)]
+    return [x - y for x,y in zip(output, answer)]
 
 def sigmoid(x):
     sig = 1 / (1 + np.exp(-x))
@@ -52,7 +52,8 @@ def relu(x):
 
 
 def create_training_data(im):
-    training_data_nn = []
+    X_train = []
+    y_train = []
     im_as_array = image_to_2d_array(im)
 
     im_gray = im.convert("L")
@@ -71,19 +72,19 @@ def create_training_data(im):
         for x in range(int(round(w/2)), w):
             print("\rWorking on (" + str(x) + ", " + str(y) + ")", end='')
             current = row[x]
-            ncolor = get_closest(colors, current)
-            im.putpixel((x, y), ncolor)
+            ncolor = get_closest_index(colors, current)
+            im.putpixel((x, y), colors[ncolor])
 
             temp = []
             try:
                 for y2 in range(y-1,y+2):
                     for x2 in range(x-1,x+2):
                         temp.append(im_gray_as_array[y2][x2])
-                training_data_nn.append((ncolor, temp))
+                y_train.append(ncolor)
+                X_train.append(temp)
             except IndexError:
                 pass
-
-    return im, training_data_nn
+    return im, X_train, y_train
 
 
 def cap_output(output):

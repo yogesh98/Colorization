@@ -130,6 +130,21 @@ def get_closest(centers, current):
 
     return random.choice(closest)
 
+def get_closest_index(centers, current):
+    min_dist = float('inf')
+    closest = []
+    for index in range(len(centers)):
+        i = centers[index]
+        dist = euclidean_distance(i, current)
+
+        if dist < min_dist:
+            min_dist = dist
+            closest = [index]
+        elif dist == min_dist:
+            closest.append(index)
+
+    return random.choice(closest)
+
 def initialize_training_data(imGray_as_array):
     num_rows = len(imGray_as_array)
     num_cols = len(imGray_as_array[0])

@@ -48,8 +48,14 @@ if __name__ == '__main__':
     answers = [[0], [0], [1], [1], [0], [0], [0], [0], [0], [0], [1], [1], [1], [1], [0], [0], [0], [0], [0], [0], [1], [1], [0], [0]]
 
 
-    nn = neural_network(4, 2, [4, 2], 1, [na, na, na], 1, 1, 1)
+    nn = neural_network(4, 2, [4, 2], 1, [sigmoid, sigmoid, sigmoid], 2000, .1, 1)
     nn.train(training_data,answers)
 
+    # training_data = [[1,0]]
+    # answer = [[1,0,0,1]]
+    #
+    # nn = neural_network(2,1,[2],4,[sigmoid, sigmoid],10,1,1)
+    # nn.train(training_data, answer)
 
-    print(answers)
+    print(nn.run([1, 1, -1, -1]))
+    print(nn.run([-1, -1, -1, -1]))
