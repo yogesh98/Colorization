@@ -23,7 +23,7 @@ def get_html_5_colors():
 #     return e
 
 def error(output, answer):
-    return [x - y for x,y in zip(output, answer)]
+    return [x - y ** 2 for x,y in zip(output, answer)]
 
 def sigmoid(x):
     sig = 1 / (1 + np.exp(-x))
@@ -80,7 +80,7 @@ def create_training_data(im):
                 for y2 in range(y-1,y+2):
                     for x2 in range(x-1,x+2):
                         temp.append(im_gray_as_array[y2][x2])
-                y_train.append(ncolor)
+                y_train.append(colors[ncolor])
                 X_train.append(temp)
             except IndexError:
                 pass
